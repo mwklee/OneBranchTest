@@ -13,6 +13,7 @@
       <b-col id="selectedLocationContainer">
         Selected location:<br/>
         <b-alert show><strong>{{ selectedLocation }}</strong></b-alert>
+        <b-table striped hover :items="selectedLocationData" :fields="fields"></b-table>
       </b-col>
     </b-row>
   </b-container>
@@ -28,7 +29,11 @@ export default {
   data() {
     return {
       selectedLocation: SELECTPLACEHOLDER,
-      aquifers: AQUIFERS.results // TODO: import aquifers from an API
+      aquifers: AQUIFERS.results, // TODO: import aquifers from an API
+      // Output fields for table
+      fields:['aquifer_id','mapping_year','name','area','vulnerability'],
+      // Array containing selected location data for table
+      selectedLocationData:[]
     }
   },
   computed: {
@@ -55,6 +60,17 @@ export default {
           // Insert item
           locations.unshift({value: SELECTPLACEHOLDER, text: SELECTPLACEHOLDER, disabled: true })
         return locations
+      }
+  },
+  watch: {
+      selectedLocation:function(val){
+        // Get all records for selected location
+        let locationData = this.aquifers
+          .filter(item => ((item!=null)))  // Filter out null items
+          .filter(item => ((item.location!=null)))  // Filter out items with null location
+          .filter(item => item.location.trim()==val);  // Grab selected location records
+        // Output selected location records
+        this.selectedLocationData=locationData;
       }
   }
 };
